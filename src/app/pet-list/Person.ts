@@ -2,12 +2,12 @@ import { Pet } from './pet';
 
 export interface Person {
   name: string;
-  gender: gender;
+  gender: Gender;
   age: number;
   pets: Pet[];
 }
 
-export enum gender {
+export enum Gender {
   male = 0,
   female = 1
 }

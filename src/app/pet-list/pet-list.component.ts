@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Person, gender } from './Person';
-import { Pet, type } from './pet';
+import { Person, Gender } from './Person';
+import { Pet, PetType } from './pet';
 import { of } from 'rxjs';
 import { take } from "rxjs/operators";
 
@@ -13,13 +13,13 @@ import { take } from "rxjs/operators";
 export class PetListComponent implements OnInit {
 
   private data: Person[] = [
-    { name: '', age: 20, gender: gender.male, pets: [{ name: 'Molly', type: type.cat }] },
-    { name: '', age: 20, gender: gender.male, pets: [{ name: 'Angel', type: type.cat }] },
-    { name: '', age: 20, gender: gender.male, pets: [{ name: 'Tigger', type: type.cat }, { name: 'Tigger Jr', type: type.dog }] },
-    { name: '', age: 20, gender: gender.male, pets: [{ name: 'Tigger senior', type: type.dog }] },
-    { name: '', age: 20, gender: gender.female, pets: [{ name: 'Jasper', type: type.cat }] },
-    { name: '', age: 20, gender: gender.female, pets: [{ name: 'Gizmo', type: type.cat }] },
-    { name: '', age: 20, gender: gender.female, pets: [{ name: 'Gizmo1', type: type.dog }] },
+    { name: '', age: 20, gender: Gender.male, pets: [{ name: 'Molly', type: PetType.cat }] },
+    { name: '', age: 20, gender: Gender.male, pets: [{ name: 'Angel', type: PetType.cat }] },
+    { name: '', age: 20, gender: Gender.male, pets: [{ name: 'Tigger', type: PetType.cat }, { name: 'Tigger Jr', type: PetType.dog }] },
+    { name: '', age: 20, gender: Gender.male, pets: [{ name: 'Tigger senior', type: PetType.dog }] },
+    { name: '', age: 20, gender: Gender.female, pets: [{ name: 'Jasper', type: PetType.cat }] },
+    { name: '', age: 20, gender: Gender.female, pets: [{ name: 'Gizmo', type: PetType.cat }] },
+    { name: '', age: 20, gender: Gender.female, pets: [{ name: 'Gizmo1', type: PetType.dog }] },
   ];
 
   constructor(private http: HttpClient) { }
@@ -35,10 +35,10 @@ export class PetListComponent implements OnInit {
     of(this.data).pipe(take(1)).subscribe((people: Person[]) => {
       people.map(person => {
         if (person && person.pets && person.pets.length) {
-          if (person.gender === gender.male) {
-            this.malesPets.push(...person.pets.filter(pet => pet.type === type.cat));
-          } else if (person.gender === gender.female) {
-            this.femalesPets.push(...person.pets.filter(pet => pet.type === type.cat));
+          if (person.gender === Gender.male) {
+            this.malesPets.push(...person.pets.filter(pet => pet.type === PetType.cat));
+          } else if (person.gender === Gender.female) {
+            this.femalesPets.push(...person.pets.filter(pet => pet.type === PetType.cat));
           }
         }
       });
