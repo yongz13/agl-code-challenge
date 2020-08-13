@@ -1,14 +1,14 @@
 <h3>AGL code challenge</h3>
 <dl>
   <dt>Male</dt>
-  <dd *ngFor="let pet of (ownerCats | async).male">
+  <dd *ngFor="let pet of (ownerCats | async)?.male">
     * {{pet.name}}
   </dd>
 </dl>
 <hr/>
 <dl>
   <dt>Female</dt>
-  <dd *ngFor="let pet of (ownerCats | async).female">
+  <dd *ngFor="let pet of (ownerCats | async)?.female">
     * {{pet.name}}
   </dd>
 </dl>
