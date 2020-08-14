@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Person } from './Person';
-import { Pet } from './pet';
-import { of } from 'rxjs';
-import { take } from "rxjs/operators";
+import { Person, Gender } from './Person';
+import { Pet, PetType } from './pet';
+import { of, Observable } from 'rxjs';
+import { mergeMap } from "rxjs/operators";
 
 @Component({
   selector: 'app-pet-list',
@@ -13,40 +13,36 @@ import { take } from "rxjs/operators";
 export class PetListComponent implements OnInit {
 
   private data: Person[] = [
-    { name: '', age: 20, gender: 'male', pets: [{ name: 'Molly', type: 'cat' }] },
-    { name: '', age: 20, gender: 'male', pets: [{ name: 'Angel', type: 'cat' }] },
-    { name: '', age: 20, gender: 'male', pets: [{ name: 'Tigger', type: 'cat' }, { name: 'Tigger Jr', type: 'dog' }] },
-    { name: '', age: 20, gender: 'male', pets: [{ name: 'Tigger senior', type: 'dog' }] },
-    { name: '', age: 20, gender: 'female', pets: [{ name: 'Jasper', type: 'cat' }] },
-    { name: '', age: 20, gender: 'female', pets: [{ name: 'Gizmo', type: 'cat' }] },
-    { name: '', age: 20, gender: 'female', pets: [{ name: 'Gizmo1', type: 'dog' }] },
+    { name: '', age: 20, gender: Gender.male, pets: [{ name: 'Molly', type: PetType.cat }] },
+    { name: '', age: 20, gender: Gender.male, pets: [{ name: 'Angel', type: PetType.cat }] },
+    { name: '', age: 20, gender: Gender.male, pets: [{ name: 'Tigger', type: PetType.cat }, { name: 'Tigger Jr', type: PetType.dog }] },
+    { name: '', age: 20, gender: Gender.male, pets: [{ name: 'Tigger senior', type: PetType.dog }] },
+    { name: '', age: 20, gender: Gender.female, pets: [{ name: 'Jasper', type: PetType.cat }] },
+    { name: '', age: 20, gender: Gender.female, pets: [{ name: 'Gizmo', type: PetType.cat }] },
+    { name: '', age: 20, gender: Gender.female, pets: [{ name: 'Gizmo1', type: PetType.dog }] },
   ];
 
   constructor(private http: HttpClient) { }
 
-  malesPets: Pet[] = [];
-  femalesPets: Pet[] = [];
+  ownerCats: Observable<{male: Pet[], female: Pet[]}>;
+
   ngOnInit(): void {
     this.getPeople();
   }
 
   getPeople(): void {
     // this.http.get(`http://localhost:5000/api/people`)
-    of(this.data).pipe(take(1)).subscribe((people: Person[]) => {
-      people.map(person => {
-        if (person && person.pets && person.pets.length) {
-          if (person.gender === 'male') {
-            this.malesPets.push(...person.pets.filter(pet => pet.type === 'cat'));
-          } else if (person.gender === 'female') {
-            this.femalesPets.push(...person.pets.filter(pet => pet.type === 'cat'));
-          }
-        }
-      });
-      this.sortAlphabetically(this.malesPets);
-      this.sortAlphabetically(this.femalesPets);
-    }, (err) => {
-        console.log(err);
-    });
+    this.ownerCats = of(this.data).pipe(mergeMap((people: Person[]): Observable<{male: Pet[], female: Pet[]}> => {
+      const maleOwnerPets = ([] as Pet[]).concat(...people.filter(person => person.gender === Gender.male).map(person => person.pets));
+      const femaleOwnerPets = ([] as Pet[]).concat(...people.filter(person => person.gender === Gender.female).map(person => person.pets));
+      const genderCats = {
+        male: maleOwnerPets.filter(pet => pet.type === PetType.cat),
+        female: femaleOwnerPets.filter(pet => pet.type === PetType.cat)
+      };
+      this.sortAlphabetically(genderCats.male);
+      this.sortAlphabetically(genderCats.female);
+      return of(genderCats);
+    }));
   }
 
   private sortAlphabetically(items: Pet[]) {
